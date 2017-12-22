@@ -1,5 +1,8 @@
 flags: {}
 packages:
-- '.'
-extra-deps: []
+- .
+extra-deps:
+- data-default-class-0.0.1
+- data-default-instances-base-0.1.0
+- table-layout-0.8.0.0
 resolver: lts-9.3
