@@ -12,7 +12,7 @@ import Game.Poker.Hands
 import Text.Layout.Table
 import qualified Data.Map as Map
 
-numOpenCards = 10
+numOpenCards = 20
 
 data GameState = GameState { humanCards::[Card], computerCards::[Card], openCards::[Card], restCards::[Card], trashCards::[Card] } deriving (Eq,Show)
 
@@ -26,7 +26,7 @@ judgeGameState g = if h < c then Computer else Human
         c = maxHand $ computerCards g ++ openCards g
 
 maxHand :: [Card] -> (PokerHand, Card)
-maxHand cs = (head . sort) (map (pokerHand . fromJust . toHand . sort) (combNList 5 cs))
+maxHand cs = (head . reverse . sort) (map (pokerHand . fromJust . toHand . sort) (combNList 5 cs))
 
 combNList :: Int -> [a] -> [[a]]
 combNList 0 _ = [[]]
@@ -51,9 +51,9 @@ checkGameState g = count $ sort $ possibleHands (humanCards g) (openCards g) (re
 
 possibleHands :: [Card] -> [Card] -> [Card] -> [Possibility]
 possibleHands now open rest = do
-  a <- allSubset now
+  a <- allSubset now 
   b <- combNList (5 - length a) rest
-  let (h,c) = maxHand $ sort (a ++ b) ++ open
+  let (h,c) = maxHand $ sort (a ++ b ++ open)
   return $ Possibility h (subList now a)
 
 randomGameState :: IO GameState
@@ -82,4 +82,5 @@ main = do
   let p = checkGameState r
   putStrLn $ "Your hands are " ++ (show $ humanCards r)
   putStrLn $ "Opoosite hands are " ++ (show $ computerCards r)
+  putStrLn $ "Open cards are " ++ (show $ openCards r)
   putStr $ gridString [column expand left def def, column expand right def def] (tableToString $ possToTable p)
